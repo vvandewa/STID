@@ -1,0 +1,67 @@
+---
+title: "IE groupe 1"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+```{r}
+library(tidyverse)
+pairs(iris, col = iris$Species)
+levels(iris$Species)
+```
+
+**Question 1 :** Peut-on utiliser la méthode de régression logistique vue la semaine dernière pour prédire la sous-espèce à partir d'autre(s) variable(s) ? Quelle limitation ? (1 point)
+
+
+
+Sur les données iris on limite aux deux sous-espèces "versicolor" et "virginica" 
+et à la variable `Petal.Length`
+```{r}
+rm(list = ls())
+data(iris)
+don <- iris %>% filter(Species %in% c("versicolor","virginica")) %>% 
+  select(Petal.Length, Species)
+head(don)
+```
+
+On crée deux variables $X$ et $Y$ comme suit : 
+```{r}
+X <- don$Petal.Length
+Y <- ifelse(don$Species == "versicolor",1,0)
+don2 <- cbind.data.frame(X,Y)
+ggplot(don2, aes(x = X, y = Y)) + 
+  geom_point() + 
+  geom_jitter(width = 0.05, height = 0) +
+  geom_smooth(method = "glm", method.args = list(family = "binomial"))
+```
+
+**Question 2 :** Comment évolue la probabilite $P(Y = 1|X = x)$  en fonction de $x$ ? (1 point)
+
+On lance la commande 
+```{r}
+model <- glm(Y ~ X, family = "binomial")
+model
+summary(model)
+```
+
+**Question 2 :** En déduire l'expression de $P(Y = 1|X = x)$ (2 points)
+
+**Question 3 :** Quelles sont les valeurs estimées des paramètres ? (1 point)
+
+```{r}
+head(model$fitted.values) # proba
+Yp <- ifelse(model$fitted.values > 0.5, 1,0)
+table(Y,Yp)
+```
+
+
+
+
+
+
+
+
+
+
+
